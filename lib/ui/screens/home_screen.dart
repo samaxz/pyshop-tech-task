@@ -1,7 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pyshop_task_camera_app/logic/state_management/providers.dart';
+import 'package:pyshop_task_camera_app/logic/controllers/providers.dart';
+import 'package:pyshop_task_camera_app/ui/widgets/photo_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -36,7 +37,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       data: (controller) => Scaffold(
         body: !controller.value.isInitialized
             ? const Center(
-                child: Text('Loading...'),
+                child: CircularProgressIndicator(),
               )
             : Stack(
                 children: [
@@ -54,42 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                      bottom: 30,
-                    ),
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Material(
-                        shape: const CircleBorder(),
-                        // this is for the splash to not go behind
-                        // the child's constraints
-                        clipBehavior: Clip.antiAlias,
-                        child: InkWell(
-                          // TODO implement onTap()
-                          onTap: () {},
-                          // TODO implement onLongPress()
-                          onLongPress: () {},
-                          splashColor: Colors.grey,
-                          child: Container(
-                            width: 76,
-                            height: 76,
-                            padding: const EdgeInsets.all(5),
-                            child: Container(
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  const PhotoButton(),
                 ],
               ),
       ),
