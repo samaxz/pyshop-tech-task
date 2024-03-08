@@ -14,24 +14,6 @@ Future<CameraController> cameraController(
     cameras[0],
     ResolutionPreset.max,
   );
-  // controller.initialize().then((_) {
-  //   // this should probably be fixed
-  //   // if (!mounted) return;
-  //   // setState(() {});
-  // }).catchError((Object e) {
-  //   if (e is CameraException) {
-  //     switch (e.code) {
-  //       case 'CameraAccessDenied':
-  //         // Handle access errors here.
-  //         break;
-  //       default:
-  //         // Handle other errors here.
-  //         break;
-  //     }
-  //   }
-  // });
-  // await controller.initialize();
-  // return controller;
   // TODO probably handle error case here too
   return controller..initialize();
 }
