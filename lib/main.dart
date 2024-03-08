@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 List<CameraDescription> _cameras = [];
@@ -89,20 +90,91 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     return Scaffold(
       body: !controller.value.isInitialized
           ? Container()
-          : SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              // wrapping expanded inside column, so that it
-              // doesn't write anything to the console
-              child: Column(
-                children: [
-                  // this works, while fitted box throws
-                  Expanded(
-                    // fit: BoxFit.fitHeight,
-                    child: CameraPreview(controller),
+          : Stack(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  // wrapping expanded inside column, so that it
+                  // doesn't write anything to the console
+                  child: Column(
+                    children: [
+                      // this works, while fitted box throws
+                      Expanded(
+                        child: CameraPreview(controller),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 30),
+                //   child: Align(
+                //     alignment: Alignment.bottomCenter,
+                //     child: const CircleAvatar(
+                //       radius: 30.0,
+                //       backgroundColor: Colors.red,
+                //     ),
+                //   ),
+                // ),
+                // this'll be on top, creating the ripple effect
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 30),
+                //   child: Align(
+                //     alignment: Alignment.bottomCenter,
+                //     child: Material(
+                //       color: Colors.transparent,
+                //       // color: Theme.of(context).cardColor,
+                //       // color: Colors.blue,
+                //       // borderRadius: BorderRadius.circular(40),
+                //       child: InkWell(
+                //         onTap: () {},
+                //         splashColor: Colors.grey,
+                //         // borderRadius: BorderRadius.circular(40),
+                //         child: Ink(
+                //           width: 100,
+                //           height: 100,
+                //           // color: Colors.yellow,
+                //           child: const CircleAvatar(
+                //             radius: 30.0,
+                //             backgroundColor: Colors.transparent,
+                //             // backgroundColor: Colors.red,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // this works
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 30),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Material(
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      // color: Colors.transparent,
+                      color: Theme.of(context).cardColor,
+                      // color: Colors.blue,
+                      // borderRadius: BorderRadius.circular(40),
+                      child: InkWell(
+                        onTap: () {},
+                        splashColor: Colors.red,
+                        // borderRadius: BorderRadius.circular(40),
+                        // child: Container(
+                        //   width: 70,
+                        //   height: 70,
+                        //   // color: Colors.white,
+                        // ),
+                        // this is just to use circle
+                        child: const CircleAvatar(
+                          radius: 33,
+                          backgroundColor: Colors.transparent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }
