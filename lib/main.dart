@@ -87,28 +87,21 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // body: !controller.value.isInitialized ? Container() : CameraPreview(controller),
-      // body: !controller.value.isInitialized
-      //     ? Container()
-      //     : FittedBox(
-      //         fit: BoxFit.contain,
-      //         child: CameraPreview(controller),
-      //       ),
-      // body: !controller.value.isInitialized
-      //     ? Container()
-      //     : AspectRatio(
-      //         aspectRatio: 1 / controller.value.aspectRatio,
-      //         child: CameraPreview(controller),
-      //       ),
       body: !controller.value.isInitialized
           ? Container()
           : SizedBox(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              // this works, while fitted box throws
-              child: Expanded(
-                // fit: BoxFit.fitHeight,
-                child: CameraPreview(controller),
+              // wrapping expanded inside column, so that it
+              // doesn't write anything to the console
+              child: Column(
+                children: [
+                  // this works, while fitted box throws
+                  Expanded(
+                    // fit: BoxFit.fitHeight,
+                    child: CameraPreview(controller),
+                  ),
+                ],
               ),
             ),
     );
