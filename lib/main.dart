@@ -1,5 +1,4 @@
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 List<CameraDescription> _cameras = [];
@@ -106,69 +105,63 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     ],
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.only(bottom: 30),
-                //   child: Align(
-                //     alignment: Alignment.bottomCenter,
-                //     child: const CircleAvatar(
-                //       radius: 30.0,
-                //       backgroundColor: Colors.red,
-                //     ),
-                //   ),
-                // ),
-                // this'll be on top, creating the ripple effect
+                // TODO remove this
+                // this isn't fully functional
                 // Padding(
                 //   padding: const EdgeInsets.only(bottom: 30),
                 //   child: Align(
                 //     alignment: Alignment.bottomCenter,
                 //     child: Material(
-                //       color: Colors.transparent,
-                //       // color: Theme.of(context).cardColor,
-                //       // color: Colors.blue,
-                //       // borderRadius: BorderRadius.circular(40),
+                //       shape: const CircleBorder(),
+                //       // this is for the splash to not go behind
+                //       // the child circle avatar
+                //       clipBehavior: Clip.antiAlias,
                 //       child: InkWell(
                 //         onTap: () {},
+                //         onLongPress: () {},
                 //         splashColor: Colors.grey,
-                //         // borderRadius: BorderRadius.circular(40),
-                //         child: Ink(
-                //           width: 100,
-                //           height: 100,
-                //           // color: Colors.yellow,
-                //           child: const CircleAvatar(
-                //             radius: 30.0,
-                //             backgroundColor: Colors.transparent,
-                //             // backgroundColor: Colors.red,
+                //         child: const CircleAvatar(
+                //           radius: 33,
+                //           backgroundColor: Colors.transparent,
+                //           child: CircleAvatar(
+                //             radius: 28,
+                //             backgroundColor: Colors.black,
+                //             child: CircleAvatar(
+                //               radius: 26.5,
+                //               backgroundColor: Colors.white,
+                //             ),
                 //           ),
                 //         ),
                 //       ),
                 //     ),
                 //   ),
                 // ),
-                // this works
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30),
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: Material(
                       shape: const CircleBorder(),
+                      // this is for the splash to not go behind
+                      // the child circle avatar
                       clipBehavior: Clip.antiAlias,
-                      // color: Colors.transparent,
-                      color: Theme.of(context).cardColor,
-                      // color: Colors.blue,
-                      // borderRadius: BorderRadius.circular(40),
                       child: InkWell(
                         onTap: () {},
-                        splashColor: Colors.red,
-                        // borderRadius: BorderRadius.circular(40),
-                        // child: Container(
-                        //   width: 70,
-                        //   height: 70,
-                        //   // color: Colors.white,
-                        // ),
-                        // this is just to use circle
-                        child: const CircleAvatar(
-                          radius: 33,
-                          backgroundColor: Colors.transparent,
+                        onLongPress: () {},
+                        splashColor: Colors.grey,
+                        child: Container(
+                          width: 76,
+                          height: 76,
+                          padding: const EdgeInsets.all(5),
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
