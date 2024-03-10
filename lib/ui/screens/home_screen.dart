@@ -34,23 +34,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // this needs to get called only in case access was either denied
   // for once or permanently
   Future<void> getCameraPermission() async {
-    final status = await Permission.camera.request();
-    if (status == PermissionStatus.denied ||
-        status == PermissionStatus.permanentlyDenied) {
-      await Permission.camera.request();
-    }
+    // final status = await Permission.camera.request();
+    // if (status == PermissionStatus.denied || status == PermissionStatus.permanentlyDenied) {
+    //   await Permission.camera.request();
+    // }
+    await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
   }
 
   @override
   void initState() {
     super.initState();
+    // Future.microtask(getCameraPermission);
     Future.microtask(getCameraPermission);
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.watch(cameraControllerProvider);
-    return controller.when(
+    // final camera
+    // final controller = ref.watch(cameraControllerProvider);
+    final cameraPermission = ref.watch(cameraPermissionNotifierProvider);
+    return cameraPermission.when(
       data: (controller) => Scaffold(
         resizeToAvoidBottomInset: false,
         // resizeToAvoidBottomPadding: false,
