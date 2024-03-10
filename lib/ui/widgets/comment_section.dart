@@ -22,7 +22,6 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
       child: Align(
         alignment: Alignment.bottomLeft,
         child: Material(
-          // shape: const CircleBorder(),
           // this is for the splash to not go behind
           // the child's constraints
           clipBehavior: Clip.antiAlias,
@@ -32,25 +31,20 @@ class _CommentSectionState extends ConsumerState<CommentSection> {
             // TODO implement onLongPress()
             onLongPress: () {},
             splashColor: Colors.grey,
-            // TODO remove this
-            child: Padding(
-              // padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-              padding: EdgeInsets.zero,
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
                   ),
-                  filled: true,
-                  hintStyle: TextStyle(
-                    color: Colors.grey[700],
-                  ),
-                  hintText: "Email",
-                  fillColor: Colors.white70,
                 ),
+                filled: true,
+                hintStyle: TextStyle(
+                  color: Colors.grey[700],
+                ),
+                hintText: 'Add a caption...',
+                fillColor: Colors.white70,
               ),
             ),
           ),
