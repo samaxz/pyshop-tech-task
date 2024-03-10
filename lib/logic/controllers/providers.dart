@@ -11,8 +11,9 @@ Future<CameraController> cameraController(
   cameras = await availableCameras();
   late final CameraController controller;
   controller = CameraController(
-    cameras[0],
+    cameras[1],
     ResolutionPreset.max,
+    enableAudio: false,
   );
   // TODO probably handle error case here too
   return controller..initialize();
