@@ -1,98 +1,81 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
 
-// i should be checking permission here, before returning anything
-// if the permission is granted, then return
-// TODO remove this
-// @riverpod
-// Future<CameraController> cameraController(
-//   CameraControllerRef ref,
-// ) async {
-//   // this isn't the best solution
-//   // TODO remove this
-//   // final permission = ref.watch(cameraPermissionProvider);
-//   // return permission.when(
-//   //   data: data,
-//   //   error: error,
-//   //   loading: loading,
-//   // );
-//   final permission = await Permission.camera.request();
-//   if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
-//     // interesting, what should i return here?
-//   }
-//   List<CameraDescription> cameras = [];
-//   cameras = await availableCameras();
-//   late final CameraController controller;
-//   controller = CameraController(
-//     // i don't quite get it, but, it looks like on some devices 0 is front, while on
-//     // others it's back camera
-//     cameras[0],
-//     ResolutionPreset.max,
-//     enableAudio: false,
-//   );
-//   // TODO probably handle error case here too
-//   return controller..initialize();
-// }
-//
-// @riverpod
-// Future<PermissionStatus> cameraPermission(
-//   CameraPermissionRef ref,
-// ) async {
-//   final permission = await Permission.camera.request();
-//   return permission;
-//   // if permission is granted, then return controller
-//   // otherwise, return something else
-//   // final some = ref.watch(cameraControllerProvider);
-//   // return some.when(
-//   //   data: (controller) => ,
-//   //   error: error,
-//   //   loading: loading,
-//   // );
-// }
-
 @riverpod
 class CameraPermissionNotifier extends _$CameraPermissionNotifier {
-  // i could either use my own class here or async value
+  // i could also use my own class here instead
   @override
-  // CameraController? build() {
   AsyncValue<CameraController> build() {
+    // grantCameraAccess();
+    ref.onAddListener(() {
+      // log('onAddListener()');
+      grantCameraAccess();
+    });
+    // these don't work
+    // ref.onResume(() {
+    //   log('onResume()');
+    // });
+    // ref.onCancel(() {
+    //   log('onCancel()');
+    // });
+    // ref.onRemoveListener(() {
+    //   log('onRemoveListener()');
+    // });
     return const AsyncLoading();
   }
 
+  Future<List<CameraDescription>> _getAvailableCameras() async {
+    final cameras = await availableCameras();
+    return cameras;
+  }
+
   Future<void> grantCameraAccess() async {
-    // no idea if this should be here or not - but, for the time being, i'll leave it here
-    // UPD commented this out
-    // state = const AsyncLoading();
-    final permission = await Permission.camera.request();
-    if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
-      // interesting, what should i return here?
+    final permission = await Permission.camera.status;
+    // without either of these, the method throws and state is stuck on loading state
+    // perhaps, i could add try/catch here
+    // if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
+    if (permission != PermissionStatus.granted) {
       state = AsyncError('camera access has been denied', StackTrace.current);
     } else {
-      // List<CameraDescription> cameras = [];
-      // cameras = await availableCameras();
       final cameras = await _getAvailableCameras();
-      // late final CameraController controller;
       final controller = CameraController(
         // i don't quite get it, but, it looks like on some devices 0 is front, while on
         // others it's back camera
         cameras[0],
         ResolutionPreset.max,
         enableAudio: false,
-        // i could also remove this
-      )..initialize();
-      // with this, the loading background is black (dk if it's good)
-      // await controller.initialize();
-      // i could also do controller..initialize()
+      );
+      // without this, the controller doesn't initialize
+      await controller.initialize();
       state = AsyncData(controller);
     }
+    log('notifier state is: $state');
   }
 
-  Future<List<CameraDescription>> _getAvailableCameras() async {
-    List<CameraDescription> cameras = [];
-    cameras = await availableCameras();
-    return cameras;
+  // in case permission was permanently denied
+  Future<void> tryAgain() async {
+    // UPD decided to add this here
+    // state = const AsyncLoading();
+    // *******
+    // final permission = await Permission.camera.request();
+    // if (permission != PermissionStatus.granted) {
+    //   await openAppSettings();
+    //   // await grantCameraAccess();
+    // } else {
+    //   await grantCameraAccess();
+    // }
+    // *****
+    await openAppSettings();
+    // *****
+    // await openAppSettings().then((value) async {
+    //   await grantCameraAccess();
+    // });
+    // Future.delayed(Duration(seconds: 1), () => grantCameraAccess());
+    // await grantCameraAccess();
   }
 }
