@@ -13,7 +13,7 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
   AsyncValue<CameraController> build() {
     ref.onAddListener(() {
       grantCameraAccess();
-      log('onAddListener()');
+      // log('onAddListener()');
     });
     return const AsyncLoading();
   }
@@ -25,16 +25,9 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
 
   Future<void> grantCameraAccess() async {
     final permission = await Permission.camera.status;
-    log('permission: $permission');
-    // Permission.camera.onDeniedCallback(() => log('huyna'));
-    // if (permission != PermissionStatus.granted) {
+    // log('permission: $permission');
     if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
       state = AsyncError('camera access has been denied', StackTrace.current);
-      // if (permission == PermissionStatus.denied) {
-      //   final permission = await Permission.camera.request();
-      //   if (permission == PermissionStatus.permanentlyDenied) {
-      //     state = AsyncError('camera access has been denied', StackTrace.current);
-      //   }
     } else {
       final cameras = await _getAvailableCameras();
       final controller = CameraController(
@@ -48,18 +41,9 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
       await controller.initialize();
       state = AsyncData(controller);
     }
-    log('notifier state is: $state');
+    // log('notifier state is: $state');
   }
 
   // in case permission was permanently denied
-  Future<void> tryAgain() async {
-    await openAppSettings();
-    // update the permission status after opening settings
-    // await Permission.camera.request();
-    // Permission.camera.onDeniedCallback(() => log('user denied access'));
-    // Permission.camera.request();
-    // the only problem that i have here is that i need to call grantCameraAccess()
-    // to update the state
-    // await grantCameraAccess();
-  }
+  Future<void> tryAgain() async => await openAppSettings();
 }
