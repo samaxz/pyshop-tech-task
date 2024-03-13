@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +18,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // TODO make use of this or delete it
   // UPD commented this out for now
   // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  // void didChangeAppLifecycleState(AppLifecycleState state) async {
   //   final CameraController? cameraController = controller;
   //
   //   // App state changed before we got the chance to initialize.
@@ -29,34 +31,83 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   //   } else if (state == AppLifecycleState.resumed) {
   //     // _initializeCameraController(cameraController.description);
   //   }
+  //   if (state == AppLifecycleState.resumed) {
+  //     final permission = await Permission.camera.status;
+  //     if (permission != PermissionStatus.granted) {
+  //       log('huyna');
+  //     }
+  //     // if (granted) {
+  //     //   //do whatever you want
+  //     // }
+  //   }
   // }
 
-  // this needs to get called only in case access was either denied
-  // for once or permanently
+  late final AppLifecycleListener listener;
+
   Future<void> getCameraPermission() async {
-    // final status = await Permission.camera.request();
-    // if (status == PermissionStatus.denied || status == PermissionStatus.permanentlyDenied) {
-    //   await Permission.camera.request();
-    // }
     await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
   }
 
   @override
   void initState() {
     super.initState();
+    listener = AppLifecycleListener(
+      onResume: () async {
+        final permission = await Permission.camera.status;
+        // this is the only right way, since if the case is permanently denied, then
+        // the only solution would be to open app settings
+        // otherwise, all the other non-granted cases will suffice
+        // although, i could also select specific cases, it's just that i'm too lazy
+        // to actually do that
+        // if (permission != PermissionStatus.granted) {
+        // this works well
+        if (permission == PermissionStatus.permanentlyDenied) {
+          final result = await Permission.camera.request();
+          if (result == PermissionStatus.granted) return;
+          // final permission = await Permission.camera.request();
+          // if (permission == PermissionStatus.denied)
+          // if (permission == PermissionStatus.denied) {
+          // permission == PermissionStatus.permanentlyDenied) {
+          // this gets called infinitely
+          // await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
+          // log('onResume');
+        }
+      },
+      // TODO remove this
+      // this gets called far too often
+      // onStateChange: (state) async {
+      //   // log('state: $state');
+      //   if (state == AppLifecycleState.resumed) {
+      //     // final permission = await Permission.camera.request();
+      //     // if (permission != PermissionStatus.granted) {
+      //     //   // log('should this get called?');
+      //     //   await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
+      //     // }
+      //     // getCameraPermission();
+      //     final permission = await Permission.camera.status;
+      //     // if (permission != PermissionStatus.granted) {
+      //     if (permission != PermissionStatus.granted) {
+      //       // log('huyna');
+      //       await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
+      //     }
+      //   }
+      // },
+    );
     // Future.microtask(getCameraPermission);
-    Future.microtask(getCameraPermission);
+  }
+
+  @override
+  void dispose() {
+    listener.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final camera
-    // final controller = ref.watch(cameraControllerProvider);
     final cameraPermission = ref.watch(cameraPermissionNotifierProvider);
     return cameraPermission.when(
       data: (controller) => Scaffold(
         resizeToAvoidBottomInset: false,
-        // resizeToAvoidBottomPadding: false,
         body: !controller.value.isInitialized
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -82,16 +133,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ],
                         ),
                       ),
-                      // TODO remove this
-                      // const PhotoButton(),
                       const CommentSection(),
                     ],
                   ),
                 ),
               ),
       ),
-      error: (error, stackTrace) => const Center(
-        child: Text('error'),
+      error: (error, stackTrace) => Center(
+        child: ElevatedButton(
+          onPressed: ref.read(cameraPermissionNotifierProvider.notifier).tryAgain,
+          child: const Text('try again'),
+        ),
       ),
       // this is pretty much useless
       loading: () => const Center(
