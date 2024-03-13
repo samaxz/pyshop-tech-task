@@ -11,21 +11,10 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
   // i could also use my own class here instead
   @override
   AsyncValue<CameraController> build() {
-    // grantCameraAccess();
     ref.onAddListener(() {
-      // log('onAddListener()');
       grantCameraAccess();
+      log('onAddListener()');
     });
-    // these don't work
-    // ref.onResume(() {
-    //   log('onResume()');
-    // });
-    // ref.onCancel(() {
-    //   log('onCancel()');
-    // });
-    // ref.onRemoveListener(() {
-    //   log('onRemoveListener()');
-    // });
     return const AsyncLoading();
   }
 
@@ -36,11 +25,16 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
 
   Future<void> grantCameraAccess() async {
     final permission = await Permission.camera.status;
-    // without either of these, the method throws and state is stuck on loading state
-    // perhaps, i could add try/catch here
-    // if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
-    if (permission != PermissionStatus.granted) {
+    log('permission: $permission');
+    // Permission.camera.onDeniedCallback(() => log('huyna'));
+    // if (permission != PermissionStatus.granted) {
+    if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
       state = AsyncError('camera access has been denied', StackTrace.current);
+      // if (permission == PermissionStatus.denied) {
+      //   final permission = await Permission.camera.request();
+      //   if (permission == PermissionStatus.permanentlyDenied) {
+      //     state = AsyncError('camera access has been denied', StackTrace.current);
+      //   }
     } else {
       final cameras = await _getAvailableCameras();
       final controller = CameraController(
@@ -59,23 +53,13 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
 
   // in case permission was permanently denied
   Future<void> tryAgain() async {
-    // UPD decided to add this here
-    // state = const AsyncLoading();
-    // *******
-    // final permission = await Permission.camera.request();
-    // if (permission != PermissionStatus.granted) {
-    //   await openAppSettings();
-    //   // await grantCameraAccess();
-    // } else {
-    //   await grantCameraAccess();
-    // }
-    // *****
     await openAppSettings();
-    // *****
-    // await openAppSettings().then((value) async {
-    //   await grantCameraAccess();
-    // });
-    // Future.delayed(Duration(seconds: 1), () => grantCameraAccess());
+    // update the permission status after opening settings
+    // await Permission.camera.request();
+    // Permission.camera.onDeniedCallback(() => log('user denied access'));
+    // Permission.camera.request();
+    // the only problem that i have here is that i need to call grantCameraAccess()
+    // to update the state
     // await grantCameraAccess();
   }
 }
