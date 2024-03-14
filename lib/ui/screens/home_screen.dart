@@ -17,37 +17,23 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final AppLifecycleListener listener;
 
-  Future<void> getCameraPermission() async {
-    await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
-  }
-
   @override
   void initState() {
     super.initState();
-    // i could also add a condition here
     // TODO make this ask for permission under condition
     Future.microtask(() async {
       final permission = await Permission.camera.status;
-      log('1');
-      // if (permission != PermissionStatus.granted) {
       if (permission == PermissionStatus.denied) {
-        // if (permission == PermissionStatus.denied ||
-        //     permission == PermissionStatus.permanentlyDenied) {
         final result = await Permission.camera.request();
-        //   await Permission.camera.request();
-        log('2');
         if (result == PermissionStatus.granted) {
           await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
-          log('3');
         }
       }
-      // await Permission.camera.request();
     });
     listener = AppLifecycleListener(
       onResume: () async {
         final permission = await Permission.camera.status;
         if (permission == PermissionStatus.denied) {
-          // if (permission != PermissionStatus.granted) {
           final result = await Permission.camera.request();
           if (result == PermissionStatus.granted) {
             await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
