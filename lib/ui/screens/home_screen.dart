@@ -24,15 +24,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // i could also add a condition here
+    // TODO make this ask for permission under condition
+    Future.microtask(() async {
+      // final permission = await Permission.camera.status;
+      // log('1');
+      // if (permission == PermissionStatus.denied ||
+      //     permission == PermissionStatus.permanentlyDenied) {
+      //   // final result = await Permission.camera.request();
+      //   await Permission.camera.request();
+      //   log('2');
+      //   // if (result == PermissionStatus.granted) {
+      //   //   await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
+      //   //   log('3');
+      //   // }
+      // }
+      // await Permission.camera.request();
+    });
     listener = AppLifecycleListener(
       onResume: () async {
         final permission = await Permission.camera.status;
-        if (permission == PermissionStatus.permanentlyDenied) {
+        // log('permission: $permission');
+        // this is wrong
+        // UPD it's not
+        // if (permission == PermissionStatus.permanentlyDenied ||
+        //     permission == PermissionStatus.denied) {
+        // if (permission == PermissionStatus.permanentlyDenied) {
+        if (permission == PermissionStatus.denied) {
+          // this is or
+          // permission == PermissionStatus.permanentlyDenied) {
+          // if (permission == PermissionStatus.granted) {
           final result = await Permission.camera.request();
+          // log('don`t you tell me this shit is here too');
           if (result == PermissionStatus.granted) {
             await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
+            // log('shouldn`t this get called?');
           }
+        } else if (permission == PermissionStatus.granted) {
+          await ref.read(cameraPermissionNotifierProvider.notifier).grantCameraAccess();
+          // log('or this?');
         }
+        // log('onResume');
       },
     );
   }
