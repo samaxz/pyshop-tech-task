@@ -45,5 +45,11 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
   }
 
   // in case permission was permanently denied
-  Future<void> tryAgain() async => await openAppSettings();
+  Future<void> tryAgain() async {
+    // this is used so that the user won't open settings while the
+    // status is changing
+    final status = await Permission.camera.status;
+    if (status == PermissionStatus.granted) return;
+    await openAppSettings();
+  }
 }
