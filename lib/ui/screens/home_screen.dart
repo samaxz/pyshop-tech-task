@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pyshop_task_camera_app/logic/controllers/providers.dart';
+import 'package:pyshop_task_camera_app/logic/controllers/camera_permission_notifier.dart';
 import 'package:pyshop_task_camera_app/ui/widgets/comment_section.dart';
+import 'package:pyshop_task_camera_app/ui/widgets/send_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +19,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // TODO make this ask for permission under condition
+    // TODO make this ask for permission under a certain condition
     Future.microtask(() async {
       final permission = await Permission.camera.status;
       if (permission == PermissionStatus.denied) {
@@ -30,6 +29,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       }
     });
+
     listener = AppLifecycleListener(
       onResume: () async {
         final permission = await Permission.camera.status;
@@ -61,31 +61,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height,
-                  ),
-                  child: Stack(
+            : Stack(
+                children: [
+                  // wrapping expanded inside column, so that it
+                  // doesn't write anything to the console
+                  Column(
                     children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        // wrapping expanded inside column, so that it
-                        // doesn't write anything to the console
-                        child: Column(
-                          children: [
-                            // this works, while fitted box throws
-                            Expanded(
-                              child: CameraPreview(controller),
-                            ),
-                          ],
-                        ),
+                      // this works, while fitted box throws
+                      Expanded(
+                        child: CameraPreview(controller),
                       ),
-                      const CommentSection(),
                     ],
                   ),
-                ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: const Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        // i somehow need to decide the height here
+                        height: 100,
+                        child: IntrinsicHeight(
+                          child: Row(
+                            // i could also wrap each child in padding, instead
+                            // of using flex or expanded in the first place
+                            children: [
+                              SizedBox(width: 15),
+                              Flexible(
+                                flex: 10,
+                                child: CommentSection(),
+                              ),
+                              SizedBox(width: 15),
+                              Flexible(
+                                flex: 2,
+                                child: SendButton(),
+                              ),
+                              SizedBox(width: 15),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
       ),
       error: (error, stackTrace) => Center(
