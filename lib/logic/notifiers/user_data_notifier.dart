@@ -61,7 +61,9 @@ class UserDataNotifier extends _$UserDataNotifier {
   Future<FormData> _convertUserDataToFormData() async {
     try {
       final text = _getControllerText();
+      // TODO uncomment this before release
       final location = await _getUserLocation();
+      // const location = UserLocation(latitude: 228, longitude: 300);
       final photo = await _takePhoto();
       final convertedPhoto = File(photo.path);
       final multipartFile = await MultipartFile.fromFile(
@@ -72,20 +74,9 @@ class UserDataNotifier extends _$UserDataNotifier {
         'comment': text,
         'latitude': location.latitude,
         'longitude': location.longitude,
-        // not sure if i need to add @ here or whatever
         'photo': multipartFile,
       });
       return formData;
-      // TODO remove all the commented catches
-      // } on DioException catch (e, st) {
-      // this gets caught inside _takePhoto(), so, i have no need in using it here
-      // on CameraException catch (e, st) {
-      //   log(
-      //     'CameraException caught inside _sendPhoto()',
-      //     error: e,
-      //     stackTrace: st,
-      //   );
-      //   rethrow;
       // could be thrown inside MultipartFile.fromFile(..)
     } on UnsupportedError catch (e, st) {
       log(
@@ -101,23 +92,34 @@ class UserDataNotifier extends _$UserDataNotifier {
     try {
       if (state.isLoading) return;
       state = const AsyncLoading();
+      // this just logs ```Instance of 'FormData'```
       // log('state is $state');
       final formData = await _convertUserDataToFormData();
+      // log('form data: $formData');
+      log('${formData.fields}');
+      log('${formData.files[0].value.contentType}');
       final service = ref.read(userDataServiceProvider);
       final response = await service.uploadUserData(formData: formData);
+      // final text = _getControllerText();
       state = AsyncData(
         UserData(
-          // this is 100% wrong, i'm pretty sure
           text: formData.fields[0].value,
           userLocation: UserLocation(
             latitude: double.parse(formData.fields[1].value),
             longitude: double.parse(formData.fields[2].value),
           ),
         ),
+        // UserData(
+        //   text: text,
+        //   userLocation: UserLocation(
+        //     latitude: 1,
+        //     longitude: 2,
+        //   ),
+        // ),
       );
     } catch (e, st) {
       state = AsyncError(e, st);
     }
-    log('UserDataNotifier state: $state');
+    // log('UserDataNotifier state: $state');
   }
 }
