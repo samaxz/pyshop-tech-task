@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,13 +15,21 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
   }
 
   Future<List<CameraDescription>> _getAvailableCameras() async {
-    final cameras = await availableCameras();
-    return cameras;
+    try {
+      final cameras = await availableCameras();
+      return cameras;
+    } on CameraException catch (e, st) {
+      log(
+        'CameraException inside _getAvailableCameras()',
+        error: e,
+        stackTrace: st,
+      );
+      rethrow;
+    }
   }
 
   Future<void> grantCameraAccess() async {
     final permission = await Permission.camera.status;
-    // log('permission: $permission');
     if (permission == PermissionStatus.denied || permission == PermissionStatus.permanentlyDenied) {
       state = AsyncError(
         'camera access has been denied',
@@ -32,11 +42,19 @@ class CameraPermissionNotifier extends _$CameraPermissionNotifier {
         ResolutionPreset.max,
         enableAudio: false,
       );
-      // without this, the controller doesn't initialize
-      await controller.initialize();
-      state = AsyncData(controller);
+      try {
+        // without this, the controller doesn't initialize
+        await controller.initialize();
+        state = AsyncData(controller);
+      } on CameraException catch (e, st) {
+        log(
+          'CameraException inside grantCameraAccess()',
+          error: e,
+          stackTrace: st,
+        );
+        state = AsyncError(e, st);
+      }
     }
-    // log('notifier state is: $state');
   }
 
   // in case permission was permanently denied

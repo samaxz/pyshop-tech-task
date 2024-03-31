@@ -17,13 +17,12 @@ part 'user_data_notifier.g.dart';
 class UserDataNotifier extends _$UserDataNotifier {
   @override
   AsyncValue<UserData> build() {
-    // return const AsyncLoading();
     return const AsyncData(
       UserData(
         text: 'initial text',
         userLocation: UserLocation(
-          latitude: 228,
-          longitude: 69,
+          latitude: 0,
+          longitude: 0,
         ),
       ),
     );
@@ -61,9 +60,7 @@ class UserDataNotifier extends _$UserDataNotifier {
   Future<FormData> _convertUserDataToFormData() async {
     try {
       final text = _getControllerText();
-      // TODO uncomment this before release
       final location = await _getUserLocation();
-      // const location = UserLocation(latitude: 228, longitude: 300);
       final photo = await _takePhoto();
       final convertedPhoto = File(photo.path);
       final multipartFile = await MultipartFile.fromFile(
@@ -92,15 +89,9 @@ class UserDataNotifier extends _$UserDataNotifier {
     try {
       if (state.isLoading) return;
       state = const AsyncLoading();
-      // this just logs ```Instance of 'FormData'```
-      // log('state is $state');
       final formData = await _convertUserDataToFormData();
-      // log('form data: $formData');
-      log('${formData.fields}');
-      log('${formData.files[0].value.contentType}');
       final service = ref.read(userDataServiceProvider);
       final response = await service.uploadUserData(formData: formData);
-      // final text = _getControllerText();
       state = AsyncData(
         UserData(
           text: formData.fields[0].value,
@@ -109,17 +100,9 @@ class UserDataNotifier extends _$UserDataNotifier {
             longitude: double.parse(formData.fields[2].value),
           ),
         ),
-        // UserData(
-        //   text: text,
-        //   userLocation: UserLocation(
-        //     latitude: 1,
-        //     longitude: 2,
-        //   ),
-        // ),
       );
     } catch (e, st) {
       state = AsyncError(e, st);
     }
-    // log('UserDataNotifier state: $state');
   }
 }
