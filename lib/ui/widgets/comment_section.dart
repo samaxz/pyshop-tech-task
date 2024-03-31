@@ -1,32 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pyshop_task_camera_app/logic/providers/text_controller_provider.dart';
 
-class CommentSection extends ConsumerStatefulWidget {
+class CommentSection extends ConsumerWidget {
   const CommentSection({super.key});
 
   @override
-  ConsumerState createState() => _CommentSectionState();
-}
-
-class _CommentSectionState extends ConsumerState<CommentSection> {
-  late final TextEditingController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final textController = ref.watch(textControllerProvider);
     return TextField(
-      controller: controller,
+      controller: textController,
       decoration: InputDecoration(
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
