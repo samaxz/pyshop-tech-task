@@ -1,19 +1,39 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pyshop_task_camera_app/logic/notifiers/user_data_notifier.dart';
 
-class SendButton extends ConsumerWidget {
+class SendButton extends ConsumerStatefulWidget {
   const SendButton({super.key});
 
-  Future<void> sendData(WidgetRef ref) async {
-    final notifier = ref.read(userDataNotifierProvider.notifier);
-    final userData = ref.read(userDataNotifierProvider);
-    if (userData.isLoading) return;
-    await notifier.uploadUserData();
+  @override
+  ConsumerState createState() => _SendButtonState();
+}
+
+class _SendButtonState extends ConsumerState<SendButton> {
+  bool pressed = false;
+
+  Future<void> sendData() async {
+    // closes keyboard if it's open
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (pressed) return;
+    setState(() => pressed = true);
+
+    // wait for a sec before calling the method again
+    Future.delayed(
+      const Duration(seconds: 1),
+      () async {
+        final notifier = ref.read(userDataNotifierProvider.notifier);
+        await notifier.sendUserData();
+        setState(() => pressed = false);
+      },
+    );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Center(
       // this makes the circle avatar to take full size
       child: SizedBox(
@@ -30,9 +50,9 @@ class SendButton extends ConsumerWidget {
               shape: const CircleBorder(),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
-                onTap: () => sendData(ref),
-                onLongPress: () => sendData(ref),
-                splashColor: Colors.grey,
+                onTap: sendData,
+                onLongPress: sendData,
+                splashColor: pressed ? Colors.transparent : Colors.grey,
                 child: const Icon(Icons.send_outlined),
               ),
             ),
