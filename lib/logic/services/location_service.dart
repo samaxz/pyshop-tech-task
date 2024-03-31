@@ -24,7 +24,6 @@ class LocationService {
         error: e.message,
         stackTrace: st,
       );
-      // Error.throwWithStackTrace(e, st);
       rethrow;
     }
   }

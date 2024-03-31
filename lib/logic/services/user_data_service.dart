@@ -15,7 +15,9 @@ class UserDataService {
   }) async {
     try {
       final uri = Uri.https(_domain, _endpoint);
+      // log('uri: $uri');
       final response = await _dio.postUri(uri, data: formData);
+      // log('response: $response');
       return response;
     } on DioException catch (e, st) {
       log(
