@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pyshop_task_camera_app/logic/controllers/camera_permission_notifier.dart';
+import 'package:pyshop_task_camera_app/logic/notifiers/camera_permission_notifier.dart';
 import 'package:pyshop_task_camera_app/ui/widgets/comment_section.dart';
 import 'package:pyshop_task_camera_app/ui/widgets/send_button.dart';
 

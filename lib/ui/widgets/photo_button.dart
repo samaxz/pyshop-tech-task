@@ -31,9 +31,7 @@ class PhotoButton extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.black,
-                  ),
+                  border: Border.all(color: Colors.black),
                 ),
               ),
             ),
