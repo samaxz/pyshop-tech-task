@@ -1,11 +1,25 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pyshop_task_camera_app/ui/screens/home_screen.dart';
 
-main() {
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
+void main() {
+  FlutterError.onError = (details) {
+    log(
+      details.exceptionAsString(),
+      stackTrace: details.stack,
+    );
+  };
+
+  runZonedGuarded(
+    () => runApp(
+      const ProviderScope(child: MyApp()),
+    ),
+    (error, stackTrace) => log(
+      error.toString(),
+      stackTrace: stackTrace,
     ),
   );
 }
