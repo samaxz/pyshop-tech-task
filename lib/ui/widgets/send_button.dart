@@ -22,7 +22,7 @@ class _SendButtonState extends ConsumerState<SendButton> {
     setState(() => pressed = true);
 
     // wait for a sec before calling the method again
-    Future.delayed(
+    await Future.delayed(
       const Duration(seconds: 1),
       () async {
         final notifier = ref.read(userDataNotifierProvider.notifier);
